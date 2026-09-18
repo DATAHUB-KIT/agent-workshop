@@ -1,0 +1,13 @@
+!pip install genai
+#############################
+
+from google import genai
+GEMINI_API_KEY=userdata.get('your api key')
+#############################################
+client=genai.Client(api_key=GEMINI_API_KEY)
+response=client.models.generate_content(
+    model="gemini-3.5-flash",
+    contents="Hello Gemini My name is lara How are you"
+)
+################################################
+print(response.text)
