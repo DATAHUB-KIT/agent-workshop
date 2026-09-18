@@ -1,53 +1,48 @@
-!pip install genai
-#############################
-from google.colab import userdata
-from google import genai
-GEMINI_API_KEY=userdata.get('your api key')
-#############################################
-client=genai.Client(api_key=GEMINI_API_KEY)
-response=client.models.generate_content(
-    model="gemini-3.5-flash",
-    contents="Hello Gemini My name is lara How are you"
-)
-################################################
-print(response.text)
-##################################################
-program-2
-#####################################################
-context="""
 
-In April 2025, Trump also claimed unprecedented authority under the 
-International Emergency Economic Powers Act (IEEPA) to impose Liberation Day tariffs 
-of at least 10% on goods from nearly all countries. Trump also used the law to impose
-punitive tariffs against several countries and to order the early closure of the de minimis exemption. 
-In February 2026, the Supreme Court ruled the IEEPA tariffs illegal in the case Learning Resources, 
-Inc. v. Trump.[7] The government collected an estimated $166 billion in IEEPA tariffs from more than 
-330,000 businesses that was required to be refunded.[8]
+#interactive Agent
+memory = []
 
+prompt_template = """
+You are a helpful AI Assistant.
 
-After the decision of the Supreme Court, Trump announced a global tariff of 
-10% under Section 122 of the Trade Act of 1974, to remain in effect for 150 days, 
-until July 24, 2026.[9][10] After a lawsuit, the United States Court of International
- Trade ruled that these tariffs are also illegal and the case is being appealed.[11]
+Previous Conversation:
+{history}
 
+Current User Question:
+{question}
 
-
+Answer:
 """
-##############################################################
-prompt=f"""
-summarize below article in 50 words
-{context}
 
-"""
-####################################################################
-final_response=client.models.generate_content(
-    model="gemini-3.5-flash",
-    contents=prompt
-)
-################################################################
-print(final_response.text)
-#########################################################
-create an image 
-A futuristic classroom where an AI humanoid robot teaches Python programming to engineering students. 
-The classroom has - Blue ambient lighting - Interactive holographic displays - Large digital screens -
-Students working on laptops - Modern smart classroom - Ultra realistic
+while True:
+
+    question = input("You: ")
+
+    if question.lower() == "exit":
+        print("Chat Ended.")
+        break
+
+    # Convert memory to text
+    history = "\n".join(memory)
+
+    # Build prompt
+    prompt = prompt_template.format(
+        history=history,
+        question=question
+    )
+
+    # Call Gemini
+    response = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=prompt
+    )
+
+    answer = response.text
+
+    # Print answer
+    print("\nAgent:", answer)
+    print("-"*70)
+
+    # Save conversation
+    memory.append(f"User: {question}")
+    memory.append(f"Assistant: {answer}")
