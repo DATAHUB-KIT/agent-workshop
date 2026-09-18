@@ -1,6 +1,6 @@
 !pip install genai
 #############################
-
+from google.colab import userdata
 from google import genai
 GEMINI_API_KEY=userdata.get('your api key')
 #############################################
