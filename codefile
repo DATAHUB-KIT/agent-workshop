@@ -9,3 +9,22 @@ def dollars_to_rupees(dollars: float) -> float:
     exchange_rate = 85
     return dollars * exchange_rate
 
+################################################################
+from google.genai import types
+
+config = types.GenerateContentConfig(
+    system_instruction="""
+    You are a beginner-friendly AI assistant.
+
+    Use the correct tool for the user question.
+
+
+    Explain the answer in simple words.
+    """,
+
+    tools=[
+        add_numbers,
+        celsius_to_fahrenheit,
+        dollars_to_rupees
+    ]
+)
