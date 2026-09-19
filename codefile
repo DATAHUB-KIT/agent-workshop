@@ -29,3 +29,18 @@ config = types.GenerateContentConfig(
     ]
 )
 ###############################################################
+while True:
+
+    question = input("\nYou: ")
+
+    if question.lower() == "exit":
+        print("Agent: Goodbye!")
+        break
+
+    response = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=question,
+        config=config
+    )
+
+    print("Agent:", response.text)
