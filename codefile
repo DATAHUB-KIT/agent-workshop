@@ -28,3 +28,4 @@ config = types.GenerateContentConfig(
         dollars_to_rupees
     ]
 )
+###############################################################
