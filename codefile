@@ -1,48 +1,11 @@
+def add_numbers(a: float, b: float) -> float:
+        return a + b
+###################################################
+def celsius_to_fahrenheit(celsius: float) -> float:
+        return (celsius * 9/5) + 32
+######################################################3
+def dollars_to_rupees(dollars: float) -> float:
 
-#interactive Agent
-memory = []
+    exchange_rate = 85
+    return dollars * exchange_rate
 
-prompt_template = """
-You are a helpful AI Assistant.
-
-Previous Conversation:
-{history}
-
-Current User Question:
-{question}
-
-Answer:
-"""
-
-while True:
-
-    question = input("You: ")
-
-    if question.lower() == "exit":
-        print("Chat Ended.")
-        break
-
-    # Convert memory to text
-    history = "\n".join(memory)
-
-    # Build prompt
-    prompt = prompt_template.format(
-        history=history,
-        question=question
-    )
-
-    # Call Gemini
-    response = client.models.generate_content(
-        model="gemini-3.5-flash",
-        contents=prompt
-    )
-
-    answer = response.text
-
-    # Print answer
-    print("\nAgent:", answer)
-    print("-"*70)
-
-    # Save conversation
-    memory.append(f"User: {question}")
-    memory.append(f"Assistant: {answer}")
