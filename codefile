@@ -1,29 +1,26 @@
- !pip install -q groq
-#################################3
-models/gemini-3-pro-preview
-models/gemini-3-flash-preview
-models/gemini-3.1-pro-preview
-models/gemini-3.1-pro-preview-customtools
-models/gemini-3.1-flash-lite-preview
-models/gemini-3.1-flash-lite
-models/gemini-3-pro-image-preview
-models/gemini-3-pro-image
-models/gemini-3.1-flash-image-preview
-models/gemini-3.1-flash-image
-models/gemini-3.1-flash-lite-image
-models/gemini-3.5-flash
-models/gemini-omni-flash-preview
-models/gemini-3.1-flash-tts-preview
-models/gemini-robotics-er-1.5-preview
-models/gemini-robotics-er-1.6-preview
-models/gemini-2.5-computer-use-preview-10-2025
-models/gemini-embedding-001
-models/gemini-embedding-2-preview
-models/gemini-embedding-2
-models/gemini-2.5-flash-native-audio-latest
-models/gemini-2.5-flash-native-audio-preview-09-2025
-models/gemini-2.5-flash-native-audio-preview-12-2025
-models/gemini-3.1-flash-live-preview
-models/gemini-3.5-live-translate-preview
+from google import genai
+from google.colab import userdata
+GEMINI_API_KEY=userdata.get('yourkey')
+#################################################333
+client=genai.Client(api_key=GEMINI_API_KEY)
+################################################
+from PIL import Image
+img=Image.open("your image path")
+img
+###########################################
+prompt1="Read Text from image without add extra content keep original"
+response1=client.models.generate_content(
+    model="gemini-3.1-flash-lite",
+    contents=[img,prompt1]
+)
+######################################################################
+context=response1.text
+#####################################################33
+final_prompt=f"""
 
-###################################################################
+please analyze and prepare report different 
+conseqences from below context
+respective positive and negative
+
+{context}
+"""
