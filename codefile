@@ -46,10 +46,19 @@ candidate_labels = ["tech", "education", "business"]
 classifier(text, candidate_labels)
 ##############################################################
 
+# text generation
+from transformers import pipeline
+
+generator = pipeline("text-generation",
+                     model="distilgpt2")
+generator(
+    "In this ai course, we will teach you how to",
+    max_length=30,
+    num_return_sequences=2,
+)
 
 
-
-
+############################################################
 
 
 
