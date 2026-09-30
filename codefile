@@ -68,3 +68,21 @@ index.add(
     np.array(embeddings).astype("float32")
 )
 ###########################################################
+question = "How many casual leaves can an employee take?"
+query_vector = model.encode(
+    [question]
+)
+#############################################################3
+k = 3
+
+distances, indices = index.search(
+    np.array(query_vector).astype("float32"),
+    k
+)
+###################################################3
+for i in range(k):
+
+    idx = indices[0][i]
+    print("Text:", chunks[idx])
+    print()
+###################################################3
