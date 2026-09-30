@@ -26,3 +26,164 @@ for filename in uploaded.keys():
 
 print("Documents uploaded")
 ######################################################
+def extract_pdf_text(pdf_path):
+
+    reader = PdfReader(pdf_path)
+
+    pages = []
+
+    for page_number, page in enumerate(reader.pages, start=1):
+
+        text = page.extract_text()
+
+        if text:
+            pages.append({
+                "page": page_number,
+                "text": text
+            })
+
+    return pages
+####################################################################3
+pdf_files = glob.glob("hr_documents/*.pdf")
+
+for file in pdf_files:
+    print(file)
+########################################################################3
+documents = []
+
+for pdf_path in pdf_files:
+
+    pages = extract_pdf_text(pdf_path)
+
+    for page in pages:
+
+        documents.append({
+            "source": os.path.basename(pdf_path),
+            "page": page["page"],
+            "text": page["text"]
+        })
+
+print("Total pages:", len(documents))
+#################################################################
+def create_chunks(text, chunk_size=700, overlap=100):
+
+    words = text.split()
+
+    chunks = []
+
+    start = 0
+
+    while start < len(words):
+
+        end = start + chunk_size
+
+        chunk = " ".join(words[start:end])
+
+        chunks.append(chunk)
+
+        start += chunk_size - overlap
+
+    return chunks
+################################################################
+sample_text = documents[0]["text"]
+
+chunks = create_chunks(sample_text)
+
+print("Number of chunks:", len(chunks))
+
+print(chunks[0])
+##################################################################
+chunk_database = []
+
+for doc in documents:
+
+    chunks = create_chunks(doc["text"])
+
+    for chunk_id, chunk in enumerate(chunks):
+
+        chunk_database.append({
+            "source": doc["source"],
+            "page": doc["page"],
+            "chunk_id": chunk_id,
+            "text": chunk
+        })
+
+print("Total chunks:", len(chunk_database))
+##########################################################################
+def get_embedding(text):
+
+    result = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=text
+    )
+
+    return np.array(result.embeddings[0].values)
+####################################################################
+embedding = get_embedding(
+    "How many annual leave days are available?"
+)
+
+print("Embedding dimensions:", len(embedding))
+####################################################################3
+embedding_matrix = np.vstack([
+    item["embedding"]
+    for item in chunk_database
+])
+
+print(embedding_matrix.shape)
+######################################################################
+def retrieve_documents(query, top_k=3):
+
+    query_embedding = get_embedding(query)
+
+    scores = cosine_similarity(
+        [query_embedding],
+        embedding_matrix
+    )[0]
+
+    top_indices = np.argsort(scores)[::-1][:top_k]
+
+    results = []
+
+    for index in top_indices:
+
+        item = chunk_database[index].copy()
+
+        item["score"] = float(scores[index])
+
+        results.append(item)
+
+    return results
+############################################################################3
+query = "How many annual leave days can an employee take?"
+
+results = retrieve_documents(query)
+
+for result in results:
+
+    print("=" * 70)
+
+    print("Source:", result["source"])
+    print("Page:", result["page"])
+    print("Score:", round(result["score"], 4))
+
+    print(result["text"])
+################################################################
+def build_context(results):
+
+    context = ""
+
+    for i, result in enumerate(results, start=1):
+
+        context += f"""
+SOURCE {i}
+Document: {result['source']}
+Page: {result['page']}
+
+Content:
+{result['text']}
+
+--------------------------------
+"""
+
+    return context
