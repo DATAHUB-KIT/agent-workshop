@@ -1,43 +1,19 @@
-from google.colab import files
-from PIL import Image
 
-uploaded = files.upload()
+from transformers import BlipProcessor
+from transformers import BlipForConditionalGeneration
 
-image = Image.open(list(uploaded.keys())[0]).convert("RGB")
-
-image
-################################################
-from transformers import CLIPProcessor
-from transformers import CLIPModel
-
-model = CLIPModel.from_pretrained(
-    "openai/clip-vit-base-patch32"
+processor = BlipProcessor.from_pretrained(
+    "Salesforce/blip-image-captioning-base"
 )
 
-processor = CLIPProcessor.from_pretrained(
-    "openai/clip-vit-base-patch32"
-)
-##################################################3
-labels = [
-    "cat",
-    "dog",
-    "car",
-    "bicycle",
-    "horse"
-]
-
-inputs = processor(
-    text=labels,
-    images=image,
-    return_tensors="pt",
-    padding=True
+model = BlipForConditionalGeneration.from_pretrained(
+    "Salesforce/blip-image-captioning-base"
 )
 
-outputs = model(**inputs)
+inputs = processor(image, return_tensors="pt")
 
-logits = outputs.logits_per_image
+out = model.generate(**inputs)
 
-probs = logits.softmax(dim=1)
+caption = processor.decode(out[0], skip_special_tokens=True)
 
-print(probs)
-######################################################
+print(caption)
