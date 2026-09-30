@@ -1,88 +1,19 @@
 
-!pip install pypdf sentence-transformers faiss-cpu
-#########################################################
-from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
-import faiss
+import os
+import glob
 import numpy as np
-###########################################3
-hr_documents = [
-    """
-    Leave Policy
+import pandas as pd
 
-    Employees are entitled to 12 casual leaves per calendar year.
-    Employees can apply for leave through the HR portal.
-    Leave applications should normally be submitted at least
-    two working days before the intended leave date.
-    """,
 
-    """
-    Work From Home Policy
+from google import genai
+from google.genai import types
+from sklearn.metrics.pairwise import cosine_similarity
+#####################################################3
+!pip install pypdf
+####################################
+from pypdf import PdfReader
+##########################333
+from google.colab import files
 
-    Employees may work from home up to two days per week,
-    subject to manager approval.
-    Employees must remain available during normal working hours.
-    """,
-
-    """
-    Attendance Policy
-
-    Employees are expected to work eight hours per working day.
-    Employees should record attendance using the company
-    attendance management system.
-    """,
-
-    """
-    Travel Policy
-
-    Employees travelling for official business can claim
-    eligible travel expenses according to company guidelines.
-    Travel requests must receive prior approval from the manager.
-    """
-]
-#########################################################################3
-chunks = []
-
-for document in hr_documents:
-
-    sentences = document.split(".")
-
-    for sentence in sentences:
-
-        sentence = sentence.strip()
-
-        if sentence:
-            chunks.append(sentence)
-#######################################################################3
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
-################################################3
-embeddings = model.encode(chunks)
-###########################################3
-dimension = embeddings.shape[1]
-
-index = faiss.IndexFlatL2(dimension)
-#################################################3
-index.add(
-    np.array(embeddings).astype("float32")
-)
-###########################################################
-question = "How many casual leaves can an employee take?"
-query_vector = model.encode(
-    [question]
-)
-#############################################################3
-k = 3
-
-distances, indices = index.search(
-    np.array(query_vector).astype("float32"),
-    k
-)
-###################################################3
-for i in range(k):
-
-    idx = indices[0][i]
-    print("Text:", chunks[idx])
-    print()
-###################################################3
+uploaded = files.upload()
+###############################################3
