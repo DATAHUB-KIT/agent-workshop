@@ -17,3 +17,12 @@ from google.colab import files
 
 uploaded = files.upload()
 ###############################################3
+import os
+
+os.makedirs("hr_documents", exist_ok=True)
+
+for filename in uploaded.keys():
+    os.rename(filename, os.path.join("hr_documents", filename))
+
+print("Documents uploaded")
+######################################################
