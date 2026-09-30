@@ -54,3 +54,17 @@ for document in hr_documents:
         if sentence:
             chunks.append(sentence)
 #######################################################################3
+model = SentenceTransformer(
+    "all-MiniLM-L6-v2"
+)
+################################################3
+embeddings = model.encode(chunks)
+###########################################3
+dimension = embeddings.shape[1]
+
+index = faiss.IndexFlatL2(dimension)
+#################################################3
+index.add(
+    np.array(embeddings).astype("float32")
+)
+###########################################################
