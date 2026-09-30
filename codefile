@@ -187,3 +187,57 @@ Content:
 """
 
     return context
+#####################################################################
+def hr_rag(question, top_k=4):
+
+    results = retrieve_documents(
+        question,
+        top_k=top_k
+    )
+
+    context = build_context(results)
+
+    prompt = f"""
+You are an HR Policy Assistant.
+
+Answer the employee's question using ONLY the
+HR policy context provided below.
+
+Rules:
+
+1. Do not invent company policies.
+2. Do not use outside knowledge.
+3. If the answer is not present in the context,
+   say that the information was not found.
+4. Give a concise and professional answer.
+5. Mention the source document and page.
+6. If the policy contains an exception, mention it.
+7. Do not make legal conclusions.
+
+HR POLICY CONTEXT:
+
+{context}
+
+EMPLOYEE QUESTION:
+
+{question}
+
+Provide:
+
+Answer:
+Source:
+Policy Section or Relevant Content:
+"""
+
+    response = client.models.generate_content(
+        model="gemini-3.8-flash",
+        contents=prompt
+    )
+
+    return response.text, results
+######################################################################3
+answer, sources = hr_rag(
+    "How many annual leave days can an employee take?"
+)
+
+print(answer)
