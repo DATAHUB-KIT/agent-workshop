@@ -1,36 +1,9 @@
-create an image A futuristic classroom where an AI humanoid robot teaches Python programming to engineering students. 
-The classroom has - Blue ambient lighting - Interactive holographic displays - Large digital screens -
-Students working on laptops - Modern smart classroom - Ultra realistic
-####################################################################3
-evaluation_prompt = f"""
-You are an AI evaluator.
+from google.colab import files
+from PIL import Image
 
-Compare the ORIGINAL PROMPT with the GENERATED IMAGE DESCRIPTION.
+uploaded = files.upload()
 
-Original Prompt
+image = Image.open(list(uploaded.keys())[0]).convert("RGB")
 
-{original_prompt}
-
-Generated Caption
-
-{response}
-
-Evaluate
-
-1. Accuracy (1-5)
-
-2. Relevance (1-5)
-
-3. Completeness (1-5)
-
-4. Missing Objects
-
-5. Alignment Percentage
-
-Return your answer as a table.
-"""
-
-##########################################################
-
-
-
+image
+################################################
