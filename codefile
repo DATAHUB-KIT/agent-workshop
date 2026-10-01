@@ -1,47 +1,31 @@
-#
-open visual studio code and open terminal install following libraries
-python -m pip install streamlit 
-python -m pip install genai
-python -m pip install google-genai
-python -m pip install pypdf 
-python -m pip install python-dotenv
-python -m pip install transformers
+import streamlit as st
+from transformers import pipeline
 
-###############################################################
-faq = {
-    "admission": "To apply, you need a high school diploma, transcripts, and SAT/ACT scores. Some programs may require additional documents.",
-    "application deadline": "The deadline for applications is March 15th for Fall intake and October 15th for Spring intake.",
-    "fees": "The tuition fee is $10,000 per semester for in-state students and $20,000 for out-of-state students.",
-    "scholarships": "We offer merit-based and need-based scholarships. You can apply through our financial aid portal.",
-    "contact": "You can contact the admissions office via email at admissions@college.edu or call +1-234-567-890."
-}
-#################################################################3
-from transformers import BlenderbotTokenizer, BlenderbotForConditionalGeneration
+# Load model (runs once)
+@st.cache_resource
+def load_model():
+    return pipeline("sentiment-analysis")
 
-# Load pre-trained model and tokenizer
-model_name = "facebook/blenderbot-400M-distill"
-tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
-model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
-###########################################################################
-def college_admission_chat():
-    print("Welcome to the College Admission Chatbot! ")
+sentiment_pipeline = load_model()
 
-    while True:
-        user_input = input("You: ").lower()
+# UI
+st.title("Hugging Face Sentiment Analysis ")
 
-        if user_input == "exit":
-          print("Chatbot: Thank you for reaching out! Have a great day!")
-          break
+text = st.text_area("Enter your text:")
 
+if st.button("Analyze"):
+    if text:
+        result = sentiment_pipeline(text)[0]
+        
+        label = result['label']
+        score = result['score']
 
-        if user_input in faq:
-            print(f"Chatbot: {faq[user_input]}")
-            continue
-        elif user_input not in faq:
-            inputs = tokenizer(user_input, return_tensors="pt")
-            reply_ids = model.generate(**inputs)
-            response = tokenizer.decode(reply_ids[0], skip_special_tokens=True)
-            print(f"Chatbot: {response}")
-            continue
-#############################################################
-college_admission_chat()
+        st.write(f"Sentiment: {label}")
+        st.write(f"Confidence: {score:.2f}")
+
+        if label == "POSITIVE":
+            st.success("Positive")
+        elif label == "NEGATIVE":
+            st.error("Negative")
+    else:
+        st.warning("Please enter some text")
