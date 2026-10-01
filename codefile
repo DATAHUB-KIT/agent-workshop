@@ -1,3 +1,9 @@
 #
-
+open visual studio code and open terminal install following libraries
+python -m pip install streamlit 
+python -m pip install genai
+python -m pip install google-genai
+python -m pip install pypdf 
+python -m pip install python-dotenv
+python -m pip install transformers
 
